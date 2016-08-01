@@ -23,6 +23,8 @@ class StargateConnectionHandler:
         self.method, self.path, self.protocol = self.get_base_header()
         if self.method in SUPPORTED_METHODS:
             self.method_supported()
+        elif self.method == "CONNECT":
+            self.method_connect()
         self.client.close()
         self.target.close()
 
@@ -38,6 +40,13 @@ class StargateConnectionHandler:
         data = (self.client_buffer[:end+1]).split()
         self.client_buffer = self.client_buffer[end+1:]
         return data   
+
+    def method_connect(self):
+        self.connect_to_stargate(self.path)
+        self.client.send('HTTP/1.1 200 Connection established\nX-StargateProxy: DEFCON24\n\n')
+        self.client_buffer = ''
+        self.client_orig_buffer = ''
+        self.process_connection()       
 
     def method_supported(self):
         self.path = self.path[7:]
