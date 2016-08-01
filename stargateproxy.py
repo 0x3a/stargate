@@ -76,7 +76,7 @@ class StargateConnectionHandler:
         padding = '\x00' * int(multiplier)
         comms = header + padding
         self.target.send(comms.encode())
-        resp = self.target.recv(8).decode()
+        resp = self.target.recv(11).decode()
 
     def process_connection(self):
         global BUFLEN
